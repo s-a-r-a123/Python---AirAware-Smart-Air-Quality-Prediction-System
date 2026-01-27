@@ -69,7 +69,7 @@ Air Aware provides a centralized and user-friendly dashboard that:
   ├── requirements.txt           
   ├── README.md                                                                                                                                       
   ├── data/                                                                                                                                           
-  │   └── air_dataset.csv                                                                                                                         
+  │     └── air_dataset.csv                                                                                                                         
   ├── assets/                                                                                                                                         
       └── screenshots                                                                                                                                 
 
