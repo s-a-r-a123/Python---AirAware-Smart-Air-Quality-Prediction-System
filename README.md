@@ -64,13 +64,12 @@ Air Aware provides a centralized and user-friendly dashboard that:
 
 ## 📂 Project Structure
 
-  air-aware/
-  │                                                                                                                                                    
+  air-aware/                                                                                                                                           
   ├── Dashboard.py                                                                                                                                    
   ├── requirements.txt           
   ├── README.md                                                                                                                                        
   ├── data/                                                                                                                                            
-  │   └── cleaned_air_data.csv                                                                                                                         
+  │   └── air_dataset.csv                                                                                                                         
   ├── assets/                                                                                                                                         
       └── screenshots                                                                                                                                 
 
@@ -83,13 +82,18 @@ Air Aware provides a centralized and user-friendly dashboard that:
 - pip installed
 
 ### Steps to Run Locally
-
-'''bash
+```bash
   - git clone https://github.com/s-a-r-a123/Python---AirAware-Smart-Air-Quality-Prediction-System.git
   - cd Python---AirAware-Smart-Air-Quality-Prediction-System
   - pip install -r requirements.txt
   - python Dashboard.py
 
-## The application will start on:
+### The application will start on:
   - http://localhost:8501
 
+## Dataset Info
+  The project uses a CSV dataset air_dataset.csv containing air quality measurements.
+This dataset is included for demonstration purposes and can be replaced or expanded with real-time API data in future versions.
+
+## Contact
+  If you have questions or want help improving this project, open an issue or drop a message!
