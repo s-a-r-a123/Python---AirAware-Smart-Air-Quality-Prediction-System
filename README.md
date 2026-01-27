@@ -27,7 +27,7 @@ The objectives of this project are:
 - To forecast future pollution levels
 - To spread awareness about environmental and health risks
 
-
+---
 
 ## 💡 Proposed Solution
 
@@ -50,7 +50,7 @@ Air Aware provides a centralized and user-friendly dashboard that:
 -  Uses sample/dummy air quality data
 -  Easy local setup
 
-
+---
 
 ## 🛠 Tech Stack
 
