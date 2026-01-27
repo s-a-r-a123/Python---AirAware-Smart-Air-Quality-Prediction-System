@@ -82,11 +82,13 @@ Air Aware provides a centralized and user-friendly dashboard that:
 - pip installed
 
 ### Steps to Run Locally
+
 ```bash
   - git clone https://github.com/s-a-r-a123/Python---AirAware-Smart-Air-Quality-Prediction-System.git
   - cd Python---AirAware-Smart-Air-Quality-Prediction-System
   - pip install -r requirements.txt
   - python Dashboard.py
+```
 
 ### The application will start on:
   - http://localhost:8501
