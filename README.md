@@ -65,14 +65,16 @@ Air Aware provides a centralized and user-friendly dashboard that:
 ## 📂 Project Structure
 
   air-aware/
-  │
-  ├── Dashboard.py                     
+  │                                                                                                                                                    
+  ├── Dashboard.py                                                                                                                                    
   ├── requirements.txt           
-  ├── README.md                
-  ├── data/
-  │   └── cleaned_air_data.csv  
-  ├── assets/
-      └── screenshots         
+  ├── README.md                                                                                                                                        
+  ├── data/                                                                                                                                            
+  │   └── cleaned_air_data.csv                                                                                                                         
+  ├── assets/                                                                                                                                         
+      └── screenshots                                                                                                                                 
+
+---
 
 ## ⚙️ Installation & Setup
 
