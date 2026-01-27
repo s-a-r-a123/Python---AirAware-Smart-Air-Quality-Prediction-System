@@ -2,7 +2,7 @@
 
 Air pollution is a growing public health concern, yet most people lack access to clear, actionable, and understandable air quality information. **Air Aware** is a smart air quality monitoring and visualization system designed to help users understand pollution levels, track trends, and make informed health decisions.
 
----
+
 
 ## 🚨 Problem Statement
 
@@ -27,7 +27,7 @@ The objectives of this project are:
 - To forecast future pollution levels
 - To spread awareness about environmental and health risks
 
----
+
 
 ## 💡 Proposed Solution
 
@@ -50,7 +50,7 @@ Air Aware provides a centralized and user-friendly dashboard that:
 -  Uses sample/dummy air quality data
 -  Easy local setup
 
----
+
 
 ## 🛠 Tech Stack
 
@@ -67,8 +67,8 @@ Air Aware provides a centralized and user-friendly dashboard that:
   air-aware/                                                                                                                                           
   ├── Dashboard.py                                                                                                                                    
   ├── requirements.txt           
-  ├── README.md                                                                                                                                        
-  ├── data/                                                                                                                                            
+  ├── README.md                                                                                                                                       
+  ├── data/                                                                                                                                           
   │   └── air_dataset.csv                                                                                                                         
   ├── assets/                                                                                                                                         
       └── screenshots                                                                                                                                 
@@ -93,9 +93,13 @@ Air Aware provides a centralized and user-friendly dashboard that:
 ### The application will start on:
   - http://localhost:8501
 
+---
+
 ## Dataset Info
   The project uses a CSV dataset air_dataset.csv containing air quality measurements.
 This dataset is included for demonstration purposes and can be replaced or expanded with real-time API data in future versions.
 
+---
+
 ## Contact
-  If you have questions or want help improving this project, open an issue or drop a message!
+  If you have questions or want help improving this project, open an issue or drop a message! ( •̀ ω •́ )✧
