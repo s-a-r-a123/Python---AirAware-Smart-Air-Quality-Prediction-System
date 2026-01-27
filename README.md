@@ -6,12 +6,15 @@ Air pollution is a growing public health concern, yet most people lack access to
 
 ## 🚨 Problem Statement
 
-Air quality data is often:
-- Fragmented across multiple platforms
-- Difficult for non-technical users to interpret
-- Focused on raw pollutant numbers rather than health impact
+  Air pollution is a growing concern in urban environments, directly impacting
+human health and environmental quality. Accurate forecasting of air quality
+can help authorities take preventive measures, issue warnings, and inform the
+public. 
 
-As a result, citizens struggle to understand how air pollution affects their daily lives and health.
+  This project aims to build a time series forecasting system that predicts air
+quality index (AQI) and pollutant levels using historical pollution data. The goal
+is to empower environmental agencies, city planners, and the public with
+timely insights for healthier decision-making.
 
 ---
 
@@ -40,12 +43,12 @@ Air Aware provides a centralized and user-friendly dashboard that:
 
 ## ✨ Key Features
 
-- 📊 Interactive air quality dashboard
-- 📈 PM2.5 and PM10 trend visualization
-- 🔮 Pollution level forecasting
-- 🧭 Clean and intuitive UI
-- 🧪 Uses sample/dummy air quality data
-- 💻 Easy local setup
+-  Interactive air quality dashboard
+-  PM2.5 and PM10 trend visualization
+-  Pollution level forecasting
+-  Clean and intuitive UI
+-  Uses sample/dummy air quality data
+-  Easy local setup
 
 ---
 
@@ -55,7 +58,7 @@ Air Aware provides a centralized and user-friendly dashboard that:
 - **Framework:** Streamlit  
 - **Data Processing:** Pandas, NumPy  
 - **Visualization:** Plotly  
-- **Forecasting:** Scikit-learn (optional)
+- **Forecasting:** Scikit-learn 
 
 ---
 
@@ -80,11 +83,11 @@ Air Aware provides a centralized and user-friendly dashboard that:
 ### Steps to Run Locally
 
 '''bash
-git clone https://github.com/s-a-r-a123/Python---AirAware-Smart-Air-Quality-Prediction-System.git
-cd Python---AirAware-Smart-Air-Quality-Prediction-System
-pip install -r requirements.txt
-python Dashboard.py
+  - git clone https://github.com/s-a-r-a123/Python---AirAware-Smart-Air-Quality-Prediction-System.git
+  - cd Python---AirAware-Smart-Air-Quality-Prediction-System
+  - pip install -r requirements.txt
+  - python Dashboard.py
 
 ## The application will start on:
-  http://localhost:8501
+  - http://localhost:8501
 
