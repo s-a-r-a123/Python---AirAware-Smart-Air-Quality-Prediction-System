@@ -1,225 +1,354 @@
 %%writefile app.py
 import streamlit as st
+import pandas as pd
+import numpy as np
 import plotly.graph_objects as go
 import time
+import random
 
 # --------------------------------------------------
 # PAGE CONFIG
 # --------------------------------------------------
-st.set_page_config(page_title="Smart Air Quality Dashboard", layout="wide")
+st.set_page_config(page_title="Air Quality Dashboard", layout="wide")
 
 # --------------------------------------------------
-# SESSION STATE
+# ADMIN LOGIN
 # --------------------------------------------------
-if "loaded" not in st.session_state:
-    st.session_state.loaded = False
-if "admin_loaded" not in st.session_state:
-    st.session_state.admin_loaded = False
+ADMIN_PASSWORD = "admin123"
 
-# --------------------------------------------------
-# YOUR EARTH LOADER (UNCHANGED)
-# --------------------------------------------------
-def show_earth_loader(seconds=2, text="Connecting…"):
-    loader = st.empty()
-    loader.markdown(f"""
-    <style>
-    .loader-wrapper {{
-      position: fixed; inset: 0; z-index: 9999;
-      display: flex; justify-content: center; align-items: center;
-      background: radial-gradient(circle at top,#0f172a,#020617);
-    }}
-    .earth {{ display: flex; flex-direction: column; align-items: center; gap: 1rem; }}
-    .earth p {{ color: white; font-size: 1.1rem; letter-spacing: 1px; }}
-    .earth-loader {{
-      --watercolor:#3f51d9; --landcolor:#9be24f;
-      width:8em; height:8em; position:relative; overflow:hidden;
-      border-radius:50%; border:2px solid rgba(255,255,255,0.9);
-      background: radial-gradient(circle at 30% 30%,#6a78ff,var(--watercolor));
-      box-shadow: inset 0.45em 0.45em rgba(255,255,255,.22),
-                  inset -0.6em -0.6em rgba(0,0,0,.42),
-                  0 0 22px rgba(79,112,255,.4);
-    }}
-    .earth-loader svg {{ position:absolute; width:8.2em; opacity:.9; }}
-    .earth-loader svg:nth-child(1) {{ top:-2.6em; animation:round1 4s infinite linear; }}
-    .earth-loader svg:nth-child(2) {{ bottom:-2.8em; animation:round2 4s infinite linear .9s; }}
-    .earth-loader svg:nth-child(3) {{ top:-1.8em; animation:round1 4s infinite linear 1.8s; }}
+if "admin_logged_in" not in st.session_state:
+    st.session_state.admin_logged_in = False
 
-    @keyframes round1 {{
-      0% {{ left:-3.5em; opacity:1; }}
-      50% {{ left:-8em; opacity:0; }}
-      100% {{ left:-3.5em; opacity:1; }}
-    }}
-    @keyframes round2 {{
-      0% {{ left:5.5em; opacity:1; }}
-      50% {{ left:-9em; opacity:0; }}
-      100% {{ left:5.5em; opacity:1; }}
-    }}
-    </style>
+if not st.session_state.admin_logged_in:
+    st.title("🔒 Admin Login")
+    password = st.text_input("Enter Admin Password:", type="password")
+    if st.button("Login"):
+        if password == ADMIN_PASSWORD:
+            st.session_state.admin_logged_in = True
+            st.success("✅ Login successful! Please wait…")
+            time.sleep(1)  # small delay to show success
+            try:
+                st.experimental_rerun()
+            except:
+                pass
+        else:
+            st.error("❌ Incorrect password")
+else:
+    # --------------------------------------------------
+    # EARTH LOADER
+    # --------------------------------------------------
+    def show_earth_loader(seconds=2, text="Connecting…"):
+        loader = st.empty()
+        loader.markdown(f"""
+        <style>
+        .loader-wrapper {{
+          position: fixed; inset: 0; z-index: 9999;
+          display: flex; justify-content: center; align-items: center;
+          background: radial-gradient(circle at top,#0f172a,#020617);
+        }}
+        .earth {{ display: flex; flex-direction: column; align-items: center; gap: 1rem; }}
+        .earth p {{ color: white; font-size: 1.1rem; letter-spacing: 1px; }}
+        .earth-loader {{
+          --watercolor:#3f51d9; --landcolor:#9be24f;
+          width:8em; height:8em; position:relative; overflow:hidden;
+          border-radius:50%; border:2px solid rgba(255,255,255,0.9);
+          background: radial-gradient(circle at 30% 30%,#6a78ff,var(--watercolor));
+          box-shadow: inset 0.45em 0.45em rgba(255,255,255,.22),
+                      inset -0.6em -0.6em rgba(0,0,0,.42),
+                      0 0 22px rgba(79,112,255,.4);
+        }}
+        .earth-loader svg {{ position:absolute; width:8.2em; opacity:.9; }}
+        .earth-loader svg:nth-child(1) {{ top:-2.6em; animation:round1 4s infinite linear; }}
+        .earth-loader svg:nth-child(2) {{ bottom:-2.8em; animation:round2 4s infinite linear .9s; }}
+        .earth-loader svg:nth-child(3) {{ top:-1.8em; animation:round1 4s infinite linear 1.8s; }}
 
-    <div class="loader-wrapper">
-      <div class="earth">
-        <div class="earth-loader">
-          <svg viewBox="0 0 200 200"><path fill="var(--landcolor)"
-            d="M100 35 C138 38,162 68,158 105 C154 142,120 160,100 156
-               C62 152,38 125,42 100 C46 70,70 40,100 35Z"/></svg>
-          <svg viewBox="0 0 200 200"><path fill="var(--landcolor)"
-            d="M100 45 C132 48,152 78,148 108 C144 138,118 148,100 145
-               C68 142,48 120,52 100 C56 78,72 50,100 45Z"/></svg>
-          <svg viewBox="0 0 200 200"><path fill="var(--landcolor)"
-            d="M100 40 C130 44,150 72,146 104 C142 136,118 148,100 144
-               C70 140,50 118,54 100 C58 74,74 46,100 40Z"/></svg>
+        @keyframes round1 {{
+          0% {{ left:-3.5em; opacity:1; }}
+          50% {{ left:-8em; opacity:0; }}
+          100% {{ left:-3.5em; opacity:1; }}
+        }}
+        @keyframes round2 {{
+          0% {{ left:5.5em; opacity:1; }}
+          50% {{ left:-9em; opacity:0; }}
+          100% {{ left:5.5em; opacity:1; }}
+        }}
+        </style>
+
+        <div class="loader-wrapper">
+          <div class="earth">
+            <div class="earth-loader">
+              <svg viewBox="0 0 200 200"><path fill="var(--landcolor)"
+                d="M100 35 C138 38,162 68,158 105 C154 142,120 160,100 156
+                   C62 152,38 125,42 100 C46 70,70 40,100 35Z"/></svg>
+              <svg viewBox="0 0 200 200"><path fill="var(--landcolor)"
+                d="M100 45 C132 48,152 78,148 108 C144 138,118 148,100 145
+                   C68 142,48 120,52 100 C56 78,72 50,100 45Z"/></svg>
+              <svg viewBox="0 0 200 200"><path fill="var(--landcolor)"
+                d="M100 40 C130 44,150 72,146 104 C142 136,118 148,100 144
+                   C70 140,50 118,54 100 C58 74,74 46,100 40Z"/></svg>
+            </div>
+            <p>{text}</p>
+          </div>
         </div>
-        <p>{text}</p>
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
-    time.sleep(seconds)
-    loader.empty()
+        """, unsafe_allow_html=True)
+        time.sleep(seconds)
+        loader.empty()
 
+    # --------------------------------------------------
+    # RUN LOADER ONCE
+    # --------------------------------------------------
+    if "loaded" not in st.session_state:
+        st.session_state.loaded = False
 
-st.title("🌍 Air Aware")
+    if not st.session_state.loaded:
+        show_earth_loader(2, "Initializing Air Quality System…")
+        st.session_state.loaded = True
+        try:
+            st.experimental_rerun()
+        except:
+            pass
 
+    # --------------------------------------------------
+    # DASHBOARD TITLE
+    # --------------------------------------------------
+    st.title("🌍 Smart Aware Air Quality System")
+    st.markdown("**Current Air Quality Dashboard**")
 
-# --------------------------------------------------
-# STARTUP LOADER
-# --------------------------------------------------
-if not st.session_state.loaded:
-    show_earth_loader(2, "Initializing Air Quality System…")
-    st.session_state.loaded = True
-    st.rerun()
+    # --------------------------------------------------
+    # CSV UPLOAD
+    # --------------------------------------------------
+    uploaded_file = st.file_uploader("Upload Air Quality CSV (e.g., Bengaluru.csv)", type=["csv"])
 
-# --------------------------------------------------
-# SIDEBAR
-# --------------------------------------------------
-st.sidebar.header("Controls")
-st.sidebar.selectbox("Monitoring Station", ["Downtown","Suburb","Industrial Area"])
-st.sidebar.selectbox("Time Range", ["Last 24 Hours","Last Week"])
-admin_mode = st.sidebar.toggle("Admin Mode")
+    if uploaded_file:
+        df = pd.read_csv(uploaded_file)
+        df.columns = [c.strip().replace(" ", "_") for c in df.columns]
 
-# --------------------------------------------------
-# ADMIN MODE
-# --------------------------------------------------
-if admin_mode and not st.session_state.admin_loaded:
-    show_earth_loader(2, "Entering Admin Mode…")
-    st.session_state.admin_loaded = True
-    st.rerun()
+        # Detect datetime column
+        datetime_col = None
+        for col in df.columns:
+            if "date" in col.lower() or "time" in col.lower():
+                datetime_col = col
+                df[col] = pd.to_datetime(df[col], errors='coerce')
+                break
+        if datetime_col is None:
+            df["Time"] = pd.date_range(start="2024-01-01", periods=len(df), freq="H")
+            datetime_col = "Time"
 
-if admin_mode:
-    st.sidebar.markdown("---")
-    st.sidebar.subheader("Admin Panel")
-    uploaded = st.sidebar.file_uploader("Upload AQI Dataset", type=["csv"])
-    threshold = st.sidebar.slider("Alert Threshold (AQI)", 50, 300, 150)
+        # Detect pollutants
+        pollutants = [c for c in df.columns if any(p in c.lower() for p in ["pm2", "pm10", "no2", "so2", "o3", "co"])]
 
-    if st.sidebar.button("📊 Refresh Model"):
-        show_earth_loader(2, "Refreshing AI Model…")
-        st.sidebar.success("Model Updated Successfully")
+        # --------------------------------------------------
+        # AQI FUNCTION
+        # --------------------------------------------------
+        def calculate_aqi(pm25):
+            if pm25 <= 30: return 50, "Good", "🌤️"
+            if pm25 <= 60: return 100, "Moderate", "⛅"
+            if pm25 <= 90: return 150, "Unhealthy(sens.)", "🌫️"
+            if pm25 <= 120: return 200, "Unhealthy", "😷"
+            return 300, "Very Unhealthy", "☠️"
 
-    if uploaded:
-        show_earth_loader(2, "Uploading Dataset…")
-        st.sidebar.success("Dataset Uploaded")
+        pm25_col = next((c for c in pollutants if "pm2" in c.lower()), None)
+        aqi_value = int(df[pm25_col].iloc[-1]) if pm25_col else 75
+        aqi_score, aqi_status, aqi_emoji = calculate_aqi(aqi_value)
 
-# --------------------------------------------------
-# AQI + FORECAST (TOP ROW)
-# --------------------------------------------------
-aqi = 70
-col1, col2 = st.columns([1.2,1])
+        # Dynamic background
+        bg_color = "#4CAF50" if aqi_score <= 50 else "#FFC107" if aqi_score <= 100 else "#FF7043" if aqi_score <= 150 else "#C62828"
+        st.markdown(f"""
+        <style>
+        body {{
+            background: linear-gradient(to bottom, #ffffff, {bg_color});
+            transition: background 0.5s ease;
+        }}
+        </style>
+        """, unsafe_allow_html=True)
 
-with col1:
-    st.subheader("Current Air Quality")
+        # --------------------------------------------------
+        # TOP ROW: AQI Globe + Forecast + Thermometer
+        # --------------------------------------------------
+        col1, col2, col3 = st.columns([1.2, 1.8, 0.8])
 
-    fig = go.Figure(go.Pie(
-      values=[50,50,50,50,50],
-      hole=0.75,
-      rotation=90,
-      marker=dict(colors=["#16a34a","#eab308","#f97316","#dc2626","#7c3aed"]),
-      textinfo="none"
-    ))
+        # ---- AQI Globe ----
+        with col1:
+            st.subheader("Current Air Quality")
+            fig = go.Figure(go.Indicator(
+                mode="gauge+number",
+                value=aqi_score,
+                title={'text': f"<b>{aqi_status}</b> {aqi_emoji}"},
+                gauge={
+                    'axis': {'range': [0, 300]},
+                    'bar': {'color': bg_color},
+                    'steps': [
+                        {'range': [0, 50], 'color': '#4CAF50'},
+                        {'range': [51, 100], 'color': '#FFC107'},
+                        {'range': [101, 150], 'color': '#FF7043'},
+                        {'range': [151, 300], 'color': '#C62828'},
+                    ],
+                },
+            ))
+            fig.update_layout(height=280)
+            st.plotly_chart(fig, use_container_width=True)
 
+            st.markdown(f"""
+            <style>
+            .globe {{
+                width: 110px; height: 110px; border-radius: 50%;
+                background: radial-gradient(circle at 30% 30%, #ffffff, {bg_color});
+                animation: pulse 2s ease-in-out infinite; margin: auto;
+                box-shadow: 0 0 25px {bg_color}; position: relative;
+            }}
+            @keyframes pulse {{
+                0% {{ transform: scale(1); opacity:0.7; }}
+                50% {{ transform: scale(1.08); opacity:1; }}
+                100% {{ transform: scale(1); opacity:0.7; }}
+            }}
+            .dot {{ width: 8px; height: 8px; background: {bg_color}; border-radius: 50%;
+                    position: absolute; animation: float 3s infinite; }}
+            @keyframes float {{
+                0% {{ transform: translateY(0px); opacity:1; }}
+                50% {{ transform: translateY(-20px); opacity:0.5; }}
+                100% {{ transform: translateY(0px); opacity:1; }}
+            }}
+            </style>
+            <div class="globe">
+                <div class="dot" style="left: 20px; animation-delay:0s;"></div>
+                <div class="dot" style="left: 50px; animation-delay:0.5s;"></div>
+                <div class="dot" style="left: 80px; animation-delay:1s;"></div>
+            </div>
+            <p style="text-align:center; font-weight:600;">Live AQI Indicator</p>
+            """, unsafe_allow_html=True)
 
-    fig.add_trace(go.Pie(
-        values=[aqi, 250 - aqi],
-        hole=0.75,
-        rotation=90,
-        marker=dict(colors=["rgba(0,0,0,0)", "rgba(15,23,42,0.85)"]),
-        textinfo="none",
-        showlegend=False
-    ))
+        # --------------------------------------------------
+        # Forecast Cards (SMALLER SQUARE – FITS CLEANLY)
+        # --------------------------------------------------
+        with col2:
+            st.subheader("7-Day Forecast")
 
-    fig.add_annotation(
-        text=f"<b>{aqi}</b><br>AQI<br><span style='color:#facc15'>Moderate</span>",
-        x=0.5,
-        y=0.5,
-        showarrow=False,
-        font=dict(size=24)   # optional: slightly larger center text
-    )
+            forecast = [
+                ("Mon", 45), ("Tue", 55), ("Wed", 70),
+                ("Thu", 90), ("Fri", 120), ("Sat", 110), ("Sun", 80)
+            ]
 
-    fig.update_layout(
-        height=250,
-        margin=dict(t=10, b=10, l=10, r=10),
-        showlegend=False
-    )
+            st.markdown("""
+            <style>
+            .forecast-card {
+                width: 75px;
+                height: 75px;              /* smaller square */
+                border-radius: 14px;
+                padding: 8px;
+                margin: 0 5px;
 
-    st.plotly_chart(fig, use_container_width=True)
-with col2:
-    st.subheader("Forecast")
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
 
-    fig = go.Figure()
+                text-align: center;
+                box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+                color: #1f2937;
+            }
 
-    fig.add_trace(go.Scatter(
-        y=[40,38,45,52,48,44],
-        mode="lines+markers",
-        name="Historical",
-        line=dict(color="#38bdf8", width=3)
-    ))
+            .good { background:#D8F3DC; }
+            .moderate { background:#FFE5B4; }
+            .unhealthy { background:#FFD6D6; }
 
-    fig.add_trace(go.Scatter(
-        y=[44,42,36,42,48],
-        mode="lines+markers",
-        name="Forecast",
-        line=dict(color="#a855f7", width=3, dash="dot")
-    ))
+            .day {
+                font-size: 12px;
+                font-weight: 600;
+            }
 
-    fig.update_layout(height=320)
-    st.plotly_chart(fig, use_container_width=True)
+            .value {
+                font-size: 20px;
+                font-weight: 800;
+                line-height: 1;
+            }
 
+            .status {
+                font-size: 10px;
+                line-height: 1.1;
+                opacity: 0.75;
 
-# --------------------------------------------------
-# POLLUTANT TRENDS
-# --------------------------------------------------
-st.subheader("Pollutant Trends")
-days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+                display: -webkit-box;
+                -webkit-line-clamp: 1;     /* match screenshot */
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                text-align: center;
+            }
+            </style>
+            """, unsafe_allow_html=True)
 
-fig = go.Figure()
+            cols = st.columns(7)
 
-fig.add_trace(go.Scatter(
-    x=days, y=[45,48,46,55,60,52,50],
-    name="PM2.5",
-    line=dict(color="#38bdf8", width=3)
-))
+            for i, (day, val) in enumerate(forecast):
+                status = calculate_aqi(val)[1]
+                cls = "good" if val <= 50 else "moderate" if val <= 100 else "unhealthy"
 
-fig.add_trace(go.Scatter(
-    x=days, y=[30,32,31,38,40,35,33],
-    name="NO2",
-    line=dict(color="#facc15", width=3)
-))
+                with cols[i]:
+                    st.markdown(f"""
+                    <div class="forecast-card {cls}">
+                        <div class="day">{day}</div>
+                        <div class="value">{val}</div>
+                        <div class="status">{status}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
 
-fig.add_trace(go.Scatter(
-    x=days, y=[25,27,28,30,32,30,29],
-    name="O3",
-    line=dict(color="#22c55e", width=3)
-))
+       # --------------------------------------------------
+        # Thermometer
+        # --------------------------------------------------
+        with col3:
+            st.subheader("AQI Thermometer")
+            st.markdown(f"""
+            <style>
+            .thermo {{ width:40px; height:200px; background:#E0E0E0; border-radius:20px; margin:auto; position:relative; }}
+            .fill {{ width:100%; height:{aqi_score/3}%; background:{bg_color}; border-radius:20px; position:absolute; bottom:0;
+                     animation: rise 2s forwards; }}
+            @keyframes rise {{ from {{ height:0%; }} to {{ height:{aqi_score/3}%; }} }}
+            </style>
+            <div class="thermo"><div class="fill"></div></div>
+            """, unsafe_allow_html=True)
 
-fig.update_layout(height=320)
-st.plotly_chart(fig, use_container_width=True)
+        # --------------------------------------------------
+        # Pollutant Chart + Real-time AQI
+        # --------------------------------------------------
+        col4, col5 = st.columns([2, 1])
 
-# --------------------------------------------------
-# DAILY ALERTS
-# --------------------------------------------------
-st.subheader("Daily Air Quality Alerts")
-c1,c2,c3 = st.columns(3)
-c1.success("☀️ Morning!\nGood air quality\nSafe for outdoor exercise")
-c2.warning("🌤 Afternoon!\nModerate AQI\nSensitive groups take care")
-c3.error("🌙 Night!\nPoor ventilation\nAvoid prolonged outdoor stay")
+        # Pollutant Chart
+        with col4:
+            st.subheader("Pollutant Concentrations")
+            fig = go.Figure()
+            for col in pollutants[:4]:
+                fig.add_trace(go.Scatter(x=df[datetime_col], y=df[col], mode="lines", name=col))
+            fig.update_layout(xaxis_title="Time", yaxis_title="Concentration (µg/m³)", height=350)
+            st.plotly_chart(fig, use_container_width=True)
 
-st.markdown("<hr><center>Smart Air Quality Dashboard 🌍</center>",
-            unsafe_allow_html=True)
+        # Real-time AQI
+        with col5:
+            st.subheader("🚨 Live AQI Alerts")
+            aqi_placeholder = st.empty()
+            for _ in range(5):
+                aqi_value = max(0, aqi_value + random.randint(-5, 5))
+                aqi_score, aqi_status, aqi_emoji = calculate_aqi(aqi_value)
+                if aqi_score <= 50:
+                    aqi_placeholder.success(f"🟢 {aqi_status} {aqi_emoji} | AQI: {aqi_score}")
+                elif aqi_score <= 100:
+                    aqi_placeholder.warning(f"🟡 {aqi_status} {aqi_emoji} | AQI: {aqi_score}")
+                elif aqi_score <= 150:
+                    aqi_placeholder.warning(f"🟠 {aqi_status} {aqi_emoji} | AQI: {aqi_score}")
+                elif aqi_score <= 200:
+                    aqi_placeholder.error(f"🔴 {aqi_status} {aqi_emoji} | AQI: {aqi_score}")
+                else:
+                    aqi_placeholder.error(f"☠️ {aqi_status} | AQI: {aqi_score}")
+                time.sleep(2)
+
+            st.markdown("""
+            <div style="background:#E3F2FD; padding:12px; border-radius:10px;">
+                <b>Health Advice:</b>
+                <ul>
+                    <li>Wear mask if outdoors</li>
+                    <li>Avoid heavy exercise</li>
+                    <li>Use air purifiers</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+
+    else:
+        st.warning("Please upload Bengaluru.csv or any Air Quality CSV file to continue.")
