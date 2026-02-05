@@ -1,0 +1,19 @@
+Cell 1: 
+!pip install streamlit -q
+
+Cell 2: 
+!wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+
+Cell 3:
+!sudo dpkg -i cloudflared-linux-amd64.deb
+
+Cell 4:
+paste Dashboard.py in the repo
+
+Cell 5:
+!streamlit run app.py --server.port 8501 --server.address 0.0.0.0 >/content/log.txt 2>&1 &
+
+Cell 6:
+!cloudflared tunnel --url http://localhost:8501/
+
+After running these cells in order a TEMPORARY link will be provided for the application
