@@ -70,7 +70,8 @@ Air Aware provides a centralized and user-friendly dashboard that:
   ├── README.md                                                                                                                                       
   ├── data/                                                                                                                                           
   │         └── air_dataset.csv                                                                                                                      
-  ├── assets/screenshots                                                                                                                              
+  ├── assets/screenshots 
+  |__ how to run temperarily in Google Colab
 
 ---
 
